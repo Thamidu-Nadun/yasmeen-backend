@@ -3,3 +3,4 @@ playwright
 python-dotenv
 flask
 flask-sqlalchemy
+pydantic[email]

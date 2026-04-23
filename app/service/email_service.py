@@ -1,5 +1,5 @@
 import os, time
-from app.repo.email_repo import get_all_emails, get_email_by_id, create_email, delete_email
+from app.repo.email_repo import get_all_emails, get_email_by_id, get_email_by_recipient, create_email, delete_email
 from app.utils.email_parser import extract_email_data
 from app.utils.pdf_generation import save_pdf
 from app.utils.logger import log_system_event, log_user_event
@@ -10,6 +10,11 @@ def get_emails() -> list[dict]:
 def get_email(email_id) -> dict | None:
     email = get_email_by_id(email_id)
     return email.to_dict() if email else None
+
+def get_email_by_mali(recipient) -> list[dict]:
+    emails = get_email_by_recipient(recipient)
+    print(f"Emails found for recipient {recipient}: {[email.to_dict() for email in emails]}")
+    return [email.to_dict() for email in emails]
 
 def save_email(recipient, subject, body, mail_type) -> dict | None:
     if not recipient or not subject or not body:

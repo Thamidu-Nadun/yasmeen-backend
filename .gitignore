@@ -5,6 +5,7 @@ t.py
 .env
 .env.local
 temp/
+IMPROVE.md
 
 # Python-generated files
 __pycache__/
