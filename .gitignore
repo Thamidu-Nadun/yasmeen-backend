@@ -1,0 +1,37 @@
+# custom files
+t.py
+
+# .gitignore
+.env
+.env.local
+temp/
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# IDE and editor files
+.vscode/
+
+# Python-specific files
+*.pyo
+*.pyd
+*.log
+*.bak
+*.swp
+*.swo
+*.egg
+*.egg-info/
+*.coverage
+.coverage.*
+.cache/
+nosetests.xml
+coverage.xml
+*/__pycache__/

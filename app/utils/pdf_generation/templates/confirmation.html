@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-size: 11px;
+            }
+
+            h2 {
+                font-size: 22px !important;
+            }
+
+            h3 {
+                font-size: 16px !important;
+            }
+
+            .container {
+                padding-top: 5mm !important;
+                padding-bottom: 5mm !important;
+            }
+
+            .no-break {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            table {
+                page-break-inside: auto;
+            }
+
+            thead {
+                display: table-row-group;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container max-w-[180mm] mx-auto px-1 py-8">
+        <div class="header w-full flex justify-between items-start mb-4 relative">
+            <div class="receipt-header">
+                <h2 class="text-2xl font-bold">RECEIPT & VOUCHER</h2>
+                <h3 class="text-xl underline font-monospace pt-6">Mr. John Doe</h3>
+            </div>
+            <div class="company-header">
+                <img src="logo.png" class="w-72 object-contain" alt="Company Logo">
+                <div class="company-info pt-8 text-xs text-right">
+                    <div>YASMEEN TRAVELS</div>
+                    <div>20,Jayapura, Kottawa, Colombo. 10230</div>
+                    <div>HOTLINE：0094-777-309244／0719-781781</div>
+                    <div>E-mail: <a href="mailto:e-tours@yasmeen.jp"></a>e-tours@yasmeen.jp</div>
+                    <div>URL: <a href="http://tours.yasmeen.jp">http://tours.yasmeen.jp</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="receipt-body w-full relative">
+            <table class="w-full">
+                <thead>
+                    <tr class="text-sm">
+                        <th class="border bg-orange-400 w-20">催行期日</th>
+                        <th class="border">2026 / 0221 - 0222</th>
+                        <th class="border">Booking Staff</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td class="border text-sm">ご参加人数</td>
+                        <td class="border">02 PAX</td>
+                        <td class="border">Mayumi Okabe</td>
+                    </tr>
+                    <tr class="text-center text-xs">
+                        <td colspan="2"></td>
+                        <td class="border-x border-t">2026 / 0205</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="w-full">
+                <thead>
+                    <tr class="text-xs">
+                        <th class="border"></th>
+                        <th class="border">PLAN</th>
+                        <th class="border">REMARK</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-[0.6rem]">
+                        <!-- MONTH -->
+                        <td
+                            class="border border-black bg-yellow-400 text-lg text-center w-20 font-bold align-center p-4">
+                            FEB
+                        </td>
+
+                        <!-- Plan Col -->
+                        <td class="border border-black align-top p-6">
+
+                            <pre>
+    <code>
+        
+19-Sep, 11:30am バンダラナイケ国際空港よりご送迎開始→
+14:00pm ピンナワラ象の孤児院観光（象の川の水浴びイベントなど）→
+15:30pm 同上出発→
+18:30pm Heritance Kandalama 泊。
+
+20-Sep, 9:00am ホテルチェックアウト→
+9:50am ご主人様をロック周辺のカフェなどにご案内後、1名様がシーギリヤロック観光
+（所要約2時間前後）→
+12:00pm頃、 ご観光後、皆様で合流。シーギリヤロックビューポイントから撮影→
+15:00pm キャンディ市内観光（例：仏歯寺、Sri Dalada museum、
+キャンディビューポイントで撮影など）→
+夕方、キャンディ市内 The Radh Hotel泊。
+
+21-Sep, 9:00am ホテルチェックアウト→
+11:30am ルート上のラブーケリーティーセンター＆紅茶工場見学（茶園鑑賞、お
+茶摘み体験、カフェ、工場見学など）→
+1400pm ヌワラエリヤタウンドライブ（郵便局外観、グレゴリー湖など）→
+15:00pm ヌワラエリヤタウン出発→
+16:50pm頃、バンダーラウェラ泊。（Manor House Bandarawela By Seven Angels）
+
+22-Sep, 9:00am ホテル出発→
+10:40am Lipton’s Seatに到着。車寄せの可能なポイントまでは移動可能。
+（Lipton’s Seat の頂上のビューポイントへは未舗装で車いすでのご移動は
+困難かもしれませんがLipton’s Seat自体に行くことは可能です。）
+11:30am頃、同上出発→途中から高速道路使用→
+15:30-16:00pm Weligama Bay Marriott Resort & Spa泊。
+※コッガラのウミガメ保護センターに子ガメの放流スケジュールを確認。
+当日夕方もしくは翌朝に観察可能ならご案内。
+
+23-Sep, 11:00am頃、ホテルチェックアウト→
+高速道路使用→
+12:00pm ゴール市内にてランチ休憩とタウンドライブ→
+14:00pm頃 ゴール市内出発。高速道路使用（途中サービスエリアにて小休止）→
+16:30-17:00pm頃、コロンボ市内観光とご夕食*事前にご希望をお伺いいたします→
+21:00pm ご夕食後、コロンボ市内出発。高速道路使用→
+22:00pm バンダーラナーヤカ国際空港にてご送迎終了。
+
+
+    </code>
+</pre>
+
+                            <!-- Pricing -->
+                            <div class="mb-8 mt-6 text-xs text-blue-500 font-bold">
+                                ■ Taxi Charter Fee (Private Vehicle)
+                                <br>
+                                Option ②:
+                                Japanese-speaking Driver (No Guide) / AC Sedan = 70,010 JPY (Tax
+                                Included)
+                            </div>
+                        </td>
+
+        </div>
+        </td>
+
+        <td class="border border-black align-center p-6 text-center">
+            <div class="font-bold mb-3">
+                *REQUEST*
+            </div>
+            <ul class="space-y-1">
+                <li>スーパーマーケット</li>
+                <li>紅茶販売店（工場直販店含む) </li>
+                <li>地元用市場・果物店</li>
+                <li>陶磁器直販店（ノリタケ等) </li>
+            </ul>
+
+        </td>
+        </tr>
+        <!-- FEE -->
+        <tr>
+            <td colspan="2" class="border border-black text-right p-4 font-semibold underline text-base">
+                Total Fee:
+            </td>
+            <td class="border border-black text-center font-bold text-base">
+                70,010 JPY
+            </td>
+        </tr>
+
+        <!-- Payment Method-->
+        <tr>
+            <td colspan="3" class="text-right pt-3 pr-4 text-sm text-red-500 font-bold">
+                (Payment Method: Credit Card)
+            </td>
+        </tr>
+        </tbody>
+        </table>
+
+        <div class="mt-8 border border-black p-4 text-sm text-blue-500 font-bold">
+            <div class="w-128">
+                <div>
+                    ◎【お見積りに含まれるもの】
+                    燃料費、ドライバーの飲食費／宿泊費用、有料道路料金、各所駐車場代
+                </div>
+                <div class="mt-4">
+                    ◎【お見積りに含まれないもの】
+                    お客様のご飲食代／宿泊代、観光地入場料、当社ドライバーへのチップ
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+</html>
