@@ -78,7 +78,8 @@ pdf_generation_backend/
 ├── 📄 requirements.txt           # Project dependencies
 │
 ├── 📁 app/                      # Application logic
-│   ├── 📁 dto/                  # Data Transfer Objects (Pydantic models)
+│   ├── � constant.py           # Constants (HTTPStatusCodes, EmailTypes)
+│   ├── �📁 dto/                  # Data Transfer Objects (Pydantic models)
 │   │   └── email_dto.py         # Email input validation
 │   │
 │   ├── 📁 models/               # Database models
@@ -135,6 +136,14 @@ GET /api/email/{id}
 
 **Response:** Single email details or 404 if not found
 
+#### Get Emails by Recipient
+
+```http
+GET /api/email/recipient/{recipient_email}
+```
+
+**Response:** Array of emails for the specified recipient
+
 #### Create Email (Trigger PDF Generation)
 
 ```http
@@ -159,7 +168,31 @@ DELETE /api/email/{id}
 
 **Response:** Success message or 404
 
-### 📊 Logging
+### � PDF Endpoints
+
+#### Get PDF Path
+
+```http
+GET /api/pdf/{id}
+```
+
+**Response:** JSON with PDF file path
+
+```json
+{
+  "pdf_path": "pdf/2026/04/23/user_invoice.pdf"
+}
+```
+
+#### Download PDF
+
+```http
+GET /api/pdf/download/{id}
+```
+
+**Response:** PDF file download or 404 if not found
+
+### �📊 Logging
 
 #### Get All Logs
 

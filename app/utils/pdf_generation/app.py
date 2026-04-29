@@ -18,17 +18,25 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
         browser = p.chromium.launch()
         page = browser.new_page()
         
-        start_date = datetime.datetime.strptime(parsed_email_content.start_date, "%Y-%m-%d")
-        end_date = datetime.datetime.strptime(parsed_email_content.end_date, "%Y-%m-%d")
+        start_date, end_date = None, None
         
-        issue_number = str(start_date.year) + " / " + start_date.strftime("%m%d") + "-" + end_date.strftime("%m%d")
+        try:
+            start_date = datetime.datetime.strptime(parsed_email_content.start_date, "%Y-%m-%d")
+            end_date = datetime.datetime.strptime(parsed_email_content.end_date, "%Y-%m-%d")
+            
+            issue_number = str(start_date.year) + " / " + start_date.strftime("%m%d") + "-" + end_date.strftime("%m%d")
+            # generated_date = datetime.datetime.now().strftime("%Y / %m%d")
+        except Exception as e:
+            print(f"Error parsing dates: {e}")
+            issue_number = "N/A"
+            # generated_date = datetime.datetime.now().strftime("%Y / %m%d")
+
         generated_date = datetime.datetime.now().strftime("%Y / %m%d")
-        
         content_injected = {
             "name": parsed_email_content.customer_name,
             "issue_number": issue_number,
             "generated_date": generated_date,
-            "month": start_date.strftime("%b"),
+            "month": start_date.strftime("%b") if start_date else "N/A",
             "passenger_count": parsed_email_content.total_pax,
             "operator": parsed_email_content.operator_name,
             "plans": '<br/>'.join(parsed_email_content.iternary),

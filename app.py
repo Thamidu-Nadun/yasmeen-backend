@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 from extensions import db
 from config import Config
 from app.constant import HTTPStatusCodes
@@ -15,6 +16,7 @@ from app.service.log_service import (
 )
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(Config)
 
 db.init_app(app)

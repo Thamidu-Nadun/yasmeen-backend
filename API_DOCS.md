@@ -9,10 +9,11 @@
 1. [Authentication](#authentication)
 2. [Base URL](#base-url)
 3. [Email Endpoints](#email-endpoints)
-4. [Log Endpoints](#log-endpoints)
-5. [Response Format](#response-format)
-6. [Error Codes](#error-codes)
-7. [Examples](#examples)
+4. [PDF Endpoints](#pdf-endpoints)
+5. [Log Endpoints](#log-endpoints)
+6. [Response Format](#response-format)
+7. [Error Codes](#error-codes)
+8. [Examples](#examples)
 
 ---
 
@@ -175,7 +176,75 @@ fetch("http://localhost:5000/api/email/1")
 
 ---
 
-### 3️⃣ Create Email (Trigger PDF Generation)
+### 3️⃣ Get Emails by Recipient
+
+Retrieve all emails for a specific recipient email address.
+
+```http
+GET /api/email/recipient/{recipient_email}
+```
+
+#### Parameters
+
+| Name              | Type   | Description                              |
+| ----------------- | ------ | ---------------------------------------- |
+| `recipient_email` | String | Recipient email address (path parameter) |
+
+#### Response
+
+**Status:** `200 OK`
+
+```json
+[
+  {
+    "id": 1,
+    "recipient": "john@example.com",
+    "subject": "April Invoice",
+    "mail_type": "invoice",
+    "body": "Customer Name: John Doe\nStart Date: 2026-04-01\nEnd Date: 2026-04-30\nAmount: 1000.00",
+    "pdf_path": "pdf/2026/04/23/john_doe_invoice.pdf"
+  },
+  {
+    "id": 3,
+    "recipient": "john@example.com",
+    "subject": "May Invoice",
+    "mail_type": "invoice",
+    "body": "Customer Name: John Doe\nStart Date: 2026-05-01\nEnd Date: 2026-05-31\nAmount: 1200.00",
+    "pdf_path": "pdf/2026/04/23/john_doe_invoice_may.pdf"
+  }
+]
+```
+
+#### Example Usage
+
+**cURL:**
+
+```bash
+curl http://localhost:5000/api/email/recipient/john@example.com
+```
+
+**Python:**
+
+```python
+import requests
+
+response = requests.get('http://localhost:5000/api/email/recipient/john@example.com')
+emails = response.json()
+for email in emails:
+    print(f"Subject: {email['subject']}")
+```
+
+**JavaScript:**
+
+```javascript
+fetch("http://localhost:5000/api/email/recipient/john@example.com")
+  .then((res) => res.json())
+  .then((emails) => emails.forEach((email) => console.log(email.subject)));
+```
+
+---
+
+### 4️⃣ Create Email (Trigger PDF Generation)
 
 Create a new email and automatically generate a PDF from the parsed content.
 
@@ -405,7 +474,152 @@ fetch("http://localhost:5000/api/email/1", {
 
 ---
 
-## 📊 Log Endpoints
+## � PDF Endpoints
+
+### Get PDF Path
+
+Retrieve the PDF file path for a specific email.
+
+```http
+GET /api/pdf/{id}
+```
+
+#### Parameters
+
+| Name | Type    | Description               |
+| ---- | ------- | ------------------------- |
+| `id` | Integer | Email ID (path parameter) |
+
+#### Response
+
+**Status:** `200 OK`
+
+```json
+{
+  "pdf_path": "pdf/2026/04/23/user_invoice.pdf"
+}
+```
+
+#### Error Response
+
+**Status:** `404 Not Found`
+
+```json
+{
+  "error": "Email not found"
+}
+```
+
+```json
+{
+  "error": "PDF not found for this email"
+}
+```
+
+#### Example Usage
+
+**cURL:**
+
+```bash
+curl http://localhost:5000/api/pdf/1
+```
+
+**Python:**
+
+```python
+import requests
+
+response = requests.get('http://localhost:5000/api/pdf/1')
+if response.status_code == 200:
+    pdf_info = response.json()
+    print(f"PDF Path: {pdf_info['pdf_path']}")
+```
+
+**JavaScript:**
+
+```javascript
+fetch("http://localhost:5000/api/pdf/1")
+  .then((res) => res.json())
+  .then((data) => console.log(data.pdf_path));
+```
+
+---
+
+### Download PDF
+
+Download the generated PDF file directly.
+
+```http
+GET /api/pdf/download/{id}
+```
+
+#### Parameters
+
+| Name | Type    | Description               |
+| ---- | ------- | ------------------------- |
+| `id` | Integer | Email ID (path parameter) |
+
+#### Response
+
+**Status:** `200 OK` - Returns PDF file binary content
+
+**Content-Type:** `application/pdf`
+
+#### Error Response
+
+**Status:** `404 Not Found`
+
+```json
+{
+  "error": "Email not found"
+}
+```
+
+```json
+{
+  "error": "PDF not found for this email"
+}
+```
+
+#### Example Usage
+
+**cURL:**
+
+```bash
+# Download and save PDF
+curl http://localhost:5000/api/pdf/download/1 -o invoice.pdf
+```
+
+**Python:**
+
+```python
+import requests
+
+response = requests.get('http://localhost:5000/api/pdf/download/1')
+if response.status_code == 200:
+    with open('invoice.pdf', 'wb') as f:
+        f.write(response.content)
+    print("PDF downloaded successfully")
+```
+
+**JavaScript:**
+
+```javascript
+// Download PDF in browser
+fetch("http://localhost:5000/api/pdf/download/1")
+  .then((res) => res.blob())
+  .then((blob) => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "invoice.pdf";
+    a.click();
+  });
+```
+
+---
+
+## �📊 Log Endpoints
 
 ### Get All Logs
 
