@@ -407,7 +407,7 @@ For issues, questions, or improvements, please refer to:
 
 ## 📜 License
 
-This project is licensed under the MIT License - feel free to use it in your projects!
+This project is licensed under the LGPL 3.0. [LICENSE](./LICENSE)
 
 ---
 
