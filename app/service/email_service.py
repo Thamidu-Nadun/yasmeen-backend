@@ -1,6 +1,6 @@
 import os, time
 from app.repo.email_repo import get_all_emails, get_email_by_id, get_email_by_recipient, create_email, delete_email
-from app.utils.email_parser import extract_email_data
+from app.utils.email_parser import extract_email_data, extract_email_data_jp
 from app.utils.pdf_generation import save_pdf
 from app.utils.logger import log_system_event, log_user_event
 
@@ -16,14 +16,20 @@ def get_email_by_mali(recipient) -> list[dict]:
     print(f"Emails found for recipient {recipient}: {[email.to_dict() for email in emails]}")
     return [email.to_dict() for email in emails]
 
-def save_email(recipient, subject, body, mail_type) -> dict | None:
+def save_email(recipient, subject, body, mail_type, language:str) -> dict | None:
     if not recipient or not subject or not body:
         raise ValueError("Recipient, subject, and body are required.")
     
     # 1. extract email data from the body
     try:
         global email_content
-        email_content = extract_email_data(body)
+        if language.lower().strip() == "japanese" or language.lower().strip() == "jp":
+            print("Parsing email content using Japanese parser")
+            email_content = extract_email_data_jp(body)
+        else:
+            # fallback to english parsing for non-japanese emails
+            print("Parsing email content using English parser")
+            email_content = extract_email_data(body)
         print("parsed email", email_content)
         log_user_event(recipient, f"Email parsed successfully for recipient: {recipient}", True)
     except Exception as e:

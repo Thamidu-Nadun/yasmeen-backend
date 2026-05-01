@@ -35,6 +35,7 @@ from app.service.email_service import (
 from app.service.log_service import (
     service_get_logs
 )
+from app.service.email_sender_service import send_mail_to_recipient
 
 app = Flask(__name__)
 CORS(app)
@@ -46,10 +47,12 @@ with app.app_context():
 
 # Emails Routes
 
+# Get all emails
 @app.route('/api/email', methods=['GET'])
 def list_emails():
     return jsonify(service_get_emails())
 
+# Get email by ID
 @app.route('/api/email/<int:email_id>', methods=['GET'])
 def fetch_email(email_id):
     email = service_get_email(email_id)
@@ -57,6 +60,7 @@ def fetch_email(email_id):
         return jsonify({'error': 'Email not found'}), HTTPStatusCodes.NOT_FOUND
     return jsonify(email)
 
+# Create a new email
 @app.route('/api/email', methods=['POST'])
 def create_email():
     if not request.is_json:
@@ -73,7 +77,8 @@ def create_email():
             recipient=data.recipient,
             subject=data.subject,
             body=data.body,
-            mail_type=data.mail_type
+            mail_type=data.mail_type,
+            language=data.language
         )
         
         return jsonify(saved_mail), HTTPStatusCodes.CREATED
@@ -81,16 +86,26 @@ def create_email():
         print(f"Error processing request: {e}")
         return jsonify({'error': 'Invalid data format'}), HTTPStatusCodes.BAD_REQUEST
 
+# Update an existing email
 @app.route('/api/email/<int:email_id>', methods=['PUT'])
 def update_email(email_id):
     return jsonify({})
 
+# Delete an email
 @app.route('/api/email/<int:email_id>', methods=['DELETE'])
 def delete_email(email_id):
     res = delete_email_by_id(email_id)
     if not res:
         return jsonify({'error': 'Email not found'}), 404
     return jsonify({'message': 'Email deleted successfully'})
+
+# send email
+@app.route('/api/email/send/<int:email_id>', methods=['POST'])
+def send_email(email_id):
+    res = send_mail_to_recipient(email_id)
+    if not res:
+        return jsonify({'error': 'Failed to send email'}), HTTPStatusCodes.INTERNAL_SERVER_ERROR
+    return jsonify({'message': 'Email sent successfully'})
 
 # Logs Routes
 @app.route('/api/log', methods=['GET'])

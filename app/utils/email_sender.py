@@ -39,7 +39,7 @@ def send_email(to_email: str, subject: str, body: str):
     except Exception as e:
         print(f"Failed to send email: {e}")
         
-def send_email_with_attachment(to_email, subject, body, attachment_path):
+def send_email_with_attachment(to_email, subject, body, attachment_path, headers=None):
     """Send email with an attachment
 
     Args:
@@ -47,6 +47,7 @@ def send_email_with_attachment(to_email, subject, body, attachment_path):
         subject (string): email subject
         body (string): email body content
         attachment_path (string): path to the file to be attached
+        headers (dict, optional): Additional email headers. Defaults to None.
     Returns:
         bool: True -> email sent successfully, False -> failed to send email
     """
@@ -55,6 +56,9 @@ def send_email_with_attachment(to_email, subject, body, attachment_path):
     msg['To'] = to_email
     msg['Subject'] = subject
     msg.attach(MIMEText(body, 'plain'))
+    if headers:
+        for key, value in headers.items():
+            msg[key] = value
     
     try:
         with open(attachment_path, 'rb') as attachment:

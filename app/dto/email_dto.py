@@ -5,3 +5,4 @@ class EmailDTO(BaseModel):
     subject: str
     body: str
     mail_type: str
+    language: str
