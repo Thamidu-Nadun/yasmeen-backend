@@ -143,6 +143,6 @@ def not_found(error):
     return jsonify({'error': 'Not found'}), HTTPStatusCodes.NOT_FOUND
 
 if __name__ == '__main__':
-    app.run(debug=False, port=5000)
+    app.run(host="0.0.0.0", debug=False, port=5000)
 
 
