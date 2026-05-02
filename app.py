@@ -21,7 +21,7 @@ along with this library. If not, see <https://www.gnu.org/licenses/>.
 
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-from extensions import db
+from extensions import db, init_browser
 from config import Config
 from app.constant import HTTPStatusCodes
 from app.dto.email_dto import EmailDTO
@@ -44,6 +44,8 @@ app.config.from_object(Config)
 db.init_app(app)
 with app.app_context():
     db.create_all()
+
+init_browser()
 
 # Emails Routes
 
@@ -143,6 +145,6 @@ def not_found(error):
     return jsonify({'error': 'Not found'}), HTTPStatusCodes.NOT_FOUND
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=False, port=5000)
+    app.run(host="0.0.0.0", debug=False, port=5000, threaded=False)
 
 
