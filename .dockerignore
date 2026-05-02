@@ -1,0 +1,10 @@
+instance/
+pdf/
+temp/
+API_DOCS.md
+README.md
+header-license.txt
+IMPROVE.md
+.git/
+.gitignore
+.dockerignore
