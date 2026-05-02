@@ -136,7 +136,7 @@ def download_pdf(email_id):
     if not pdf_path:
         return jsonify({'error': 'PDF not found for this email'}), HTTPStatusCodes.NOT_FOUND
     
-    return send_file(pdf_path, as_attachment=True)
+    return send_file(pdf_path, as_attachment=False, mimetype='application/pdf')
 
 @app.errorhandler(404)
 def not_found(error):
