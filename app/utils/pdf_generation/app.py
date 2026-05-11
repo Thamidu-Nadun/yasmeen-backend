@@ -58,7 +58,13 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
         page.pdf(path=output_path, 
                 format='A4', 
                 print_background=True, 
-                display_header_footer=False)
+                display_header_footer=False,
+                margin={
+                    "top": "8mm",
+                    "bottom": "8mm",
+                    "left": "8mm",
+                    "right": "8mm"
+                })
     except Exception as e:
         print(f"Error generating PDF: {e}")
     finally:
