@@ -36,20 +36,22 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
             "name": parsed_email_content.customer_name,
             "issue_number": issue_number,
             "generated_date": generated_date,
-            "month": start_date.strftime("%b") if start_date else "N/A",
+            "month": start_date.strftime("%b").upper() if start_date else "N/A",
             "passenger_count": parsed_email_content.total_pax,
             "operator": parsed_email_content.operator_name,
             "plans": '<br/>'.join(parsed_email_content.iternary),
+            "requests": parsed_email_content.requests,
             "remarks": [
                 "some remarks",
                 "some more remarks"
             ],
             "vehicle_type": parsed_email_content.vehicle_type,
             "staff_assignment": parsed_email_content.staff_assignment,
-            "total_fee": "100000"
+            "total_fee": parsed_email_content.total_fee,
+            "payment_method": parsed_email_content.payment_method if parsed_email_content.payment_method else "N/A"
         }
         
-        print("Content to be injected: ", content_injected['plans'])
+        # print("Content to be injected: ", content_injected['plans'])
         
         content = render_template("template_confirmation.html", content_injected)
         page.set_content(content)

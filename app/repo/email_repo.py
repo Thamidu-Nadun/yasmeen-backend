@@ -8,6 +8,26 @@ def get_all_emails() -> list[Email]:
     """
     return Email.query.all()
 
+def get_email_desc() -> list[Email]:
+    """Retrieve all email records from the database, ordered by creation date in descending order.
+    Returns:
+        list: A list of all Email objects in the database, ordered by creation date (newest first).
+    """
+    return Email.query.order_by(Email.id.desc()).all()
+
+def get_email_as_page(start: int, limit: int, sort: str = "desc") -> list[Email]:
+    """Retrieve a paginated list of email records from the database.
+    Args:
+        start (int): The starting index for pagination.
+        limit (int): The maximum number of email records to retrieve.
+    Returns:
+        list: A list of Email objects for the specified page.
+    """
+    if sort == "desc":
+        return Email.query.order_by(Email.id.desc()).offset(start).limit(limit).all()
+    else:
+        return Email.query.order_by(Email.id.asc()).offset(start).limit(limit).all()
+
 def get_email_by_id(email_id) -> Email | None:
     """Retrieve an email record by its ID.
     Args:

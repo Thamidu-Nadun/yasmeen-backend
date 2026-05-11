@@ -6,7 +6,9 @@ class EmailContent:
                  vehicle_type: str = None,
                  staff_assignment: dict = None,
                  iternary: list = None,
-                 total_fee: int = 0):
+                 requests: list = None,
+                 total_fee: int = 0,
+                 payment_method: str = None):
         self.customer_name = customer_name
         self.start_date = start_date
         self.end_date = end_date
@@ -15,7 +17,9 @@ class EmailContent:
         self.vehicle_type = vehicle_type
         self.staff_assignment = staff_assignment if staff_assignment is not None else {}
         self.iternary = iternary if iternary is not None else []
+        self.requests = requests if requests is not None else []
         self.total_fee = total_fee
+        self.payment_method = payment_method
         
     def __str__(self):
         return json.dumps({
@@ -27,7 +31,9 @@ class EmailContent:
             "vehicle_type": self.vehicle_type,
             "staff_assignment": self.staff_assignment,
             "iternary": self.iternary,
-            "total_fee": self.total_fee
+            "requests": self.requests,
+            "total_fee": self.total_fee,
+            "payment_method": self.payment_method
         }, indent=4)
 
     @classmethod
@@ -43,7 +49,9 @@ class EmailContent:
                 vehicle_type=content_dict.get("vehicle_type"),
                 staff_assignment=content_dict.get("staff_assignment", {}),
                 iternary=content_dict.get("iternary", []),
-                total_fee=content_dict.get("total_fee", 0)
+                requests=content_dict.get("requests", []),
+                total_fee=content_dict.get("total_fee", 0),
+                payment_method=content_dict.get("payment_method")
             )
         except json.JSONDecodeError as e:
             print(f"Error decoding email content: {e}")
@@ -59,7 +67,9 @@ class EmailContent:
     Vehicle Type: {self.vehicle_type}
     Staff Assignment: {json.dumps(self.staff_assignment, indent=4)}
     Iternary: {json.dumps(self.iternary, indent=4)}
+    Requests: {json.dumps(self.requests, indent=4)}
     Total Fee: {self.total_fee}
+    Payment Method: {self.payment_method}
     """
 
 class Email:

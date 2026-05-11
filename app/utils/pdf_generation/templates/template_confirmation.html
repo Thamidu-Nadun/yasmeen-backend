@@ -116,7 +116,7 @@
                         <!-- MONTH -->
                         <td
                             class="border border-black bg-yellow-400 text-lg text-center w-20 font-bold align-center p-4">
-                            FEB
+                            {{ month }}
                         </td>
 
                         <!-- Plan Col -->
@@ -141,10 +141,11 @@
                 *REQUEST*
             </div>
             <ul class="space-y-1">
-                <li>スーパーマーケット</li>
-                <li>紅茶販売店（工場直販店含む) </li>
-                <li>地元用市場・果物店</li>
-                <li>陶磁器直販店（ノリタケ等) </li>
+                {% for request in requests %}
+                <li class="text-[0.52rem] text-gray-700">
+                    {{ request }}
+                </li>
+                {% endfor %}
             </ul>
 
         </td>
@@ -162,7 +163,7 @@
         <!-- Payment Method-->
         <tr>
             <td colspan="3" class="text-right pt-3 pr-4 text-sm text-red-500 font-bold">
-                (Payment Method: Credit Card)
+                ({{ payment_method }})
             </td>
         </tr>
         </tbody>

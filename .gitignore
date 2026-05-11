@@ -6,6 +6,9 @@ t.py
 .env.local
 temp/
 IMPROVE.md
+pdf/
+instance/
+logs/
 
 # Python-generated files
 __pycache__/

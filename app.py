@@ -29,6 +29,7 @@ from app.service.email_service import (
     get_emails as service_get_emails,
     get_email as service_get_email,
     get_email_by_mali as service_get_email_by_mail,
+    get_email_by_page as service_get_email_by_page,
     save_email as service_save_email,
     delete_email_by_id,
 )
@@ -52,7 +53,14 @@ init_browser()
 # Get all emails
 @app.route('/api/email', methods=['GET'])
 def list_emails():
-    return jsonify(service_get_emails())
+    sort = request.args.get('sort', 'desc')
+    page = request.args.get('start', 0, type=int)
+    limit = request.args.get('limit', 20, type=int)
+    
+    if sort == 'desc':
+        return jsonify(service_get_email_by_page(page, limit, sort="desc"))
+    else:
+        return jsonify(service_get_email_by_page(page, limit, sort="asc"))
 
 # Get email by ID
 @app.route('/api/email/<int:email_id>', methods=['GET'])

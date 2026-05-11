@@ -1,11 +1,21 @@
 import os, time
-from app.repo.email_repo import get_all_emails, get_email_by_id, get_email_by_recipient, create_email, delete_email
+from app.repo.email_repo import get_all_emails, get_email_by_id, get_email_desc, get_email_as_page, get_email_by_recipient, create_email, delete_email
 from app.utils.email_parser import extract_email_data, extract_email_data_jp
 from app.utils.pdf_generation import save_pdf
 from app.utils.logger import log_system_event, log_user_event
 
+DEFAULT_PAGE_LIMIT = 20
+
 def get_emails() -> list[dict]:
     return [email.to_dict() for email in get_all_emails()]
+
+def get_email_by_desc() -> list[dict]:
+    return [email.to_dict() for email in get_email_desc()]
+
+def get_email_by_page(start: int = 0, limit: int = DEFAULT_PAGE_LIMIT, sort: str = "desc") -> list[dict]:
+    if (start < 0 and limit < 0):
+        start, limit = 0, DEFAULT_PAGE_LIMIT
+    return [email.to_dict() for email in get_email_as_page(start, limit, sort)]
 
 def get_email(email_id) -> dict | None:
     email = get_email_by_id(email_id)

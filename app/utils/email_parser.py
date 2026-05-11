@@ -35,13 +35,25 @@ def extract_email_data(email_content: str) -> EmailContent:
             email_data.operator_name = line.split(':', 1)[1].strip()
         elif re.match(r'Vehicle\s+Type:', line, re.IGNORECASE):
             email_data.vehicle_type = line.split(':', 1)[1].strip()
-        
+        elif re.match(r'Total\s+Fee\s+=', line, re.IGNORECASE):
+            _price = line.split('=', 1)[1].strip()
+            price_match = re.search(r'([\d,]+)', _price)
+            if price_match:
+                email_data.total_fee = int(price_match.group(1).replace(',', ''))
+            else:
+                email_data.total_fee = 0
+        elif re.match(r'Payment\s+Method:', line, re.IGNORECASE):
+            email_data.payment_method = line.strip()
+                
         # sections matching
         elif re.match(r'\[Staff\s+(Assignment|Management)\]', line, re.IGNORECASE):
             section = 'staff_assignment'
             continue
         elif re.match(r'\[Route Plan / Itinerary\]', line, re.IGNORECASE):
             section = 'itinerary'
+            continue
+        elif re.match(r'\[Request(s)?\]', line, re.IGNORECASE):
+            section = 'requests'
             continue
         elif '━' in line: # separator line
             section = None
@@ -59,6 +71,11 @@ def extract_email_data(email_content: str) -> EmailContent:
             clean_line = line.rstrip('\n')
             if clean_line.startswith("---"): email_data.iternary.append("")
             else: email_data.iternary.append(clean_line)
+            
+        elif section == 'requests':
+            clean_line = line.rstrip('\n')
+            line = re.sub(r'-\s*', '', clean_line) # remove leading dash and spaces
+            if line: email_data.requests.append(line)
             
             
     return email_data
@@ -95,6 +112,15 @@ def extract_email_data_jp(email_content: str) -> EmailContent:
             email_data.operator_name = line.split(':', 1)[1].strip()
         elif re.match(r'(Vehicle\s+Type:|車両タイプ[:：])', line, re.IGNORECASE):
             email_data.vehicle_type = line.split(':', 1)[1].strip()
+        elif re.match(r'(Total\s+Fee\s+=|総額\s*=)', line, re.IGNORECASE):
+            _price = line.split('=', 1)[1].strip()
+            price_match = re.search(r'([\d,]+)', _price)
+            if price_match:
+                email_data.total_fee = int(price_match.group(1).replace(',', ''))
+            else:
+                email_data.total_fee = 0
+        elif re.match(r'(Payment\s+Method:|支払い方法[:：])', line, re.IGNORECASE):
+            email_data.payment_method = line.strip()
         
         # sections matching
         elif re.match(r'\[(Staff\s+(Assignment|Management)|スタッフ(手配|管理))\]', line, re.IGNORECASE):
@@ -102,6 +128,9 @@ def extract_email_data_jp(email_content: str) -> EmailContent:
             continue
         elif re.match(r'\[(Route Plan / Itinerary|行程表|旅程)\]', line, re.IGNORECASE):
             section = 'itinerary'
+            continue
+        elif re.match(r'\[(Request(s)?|ご要望)\]', line, re.IGNORECASE):
+            section = 'requests'
             continue
         elif '━' in line: # separator line
             section = None
@@ -119,6 +148,11 @@ def extract_email_data_jp(email_content: str) -> EmailContent:
             clean_line = line.rstrip('\n')
             if clean_line.startswith("---"): email_data.iternary.append("")
             else: email_data.iternary.append(clean_line)
+            
+        elif section == 'requests':
+            clean_line = line.rstrip('\n')
+            line = re.sub(r'-\s*', '', clean_line) # remove leading dash and spaces
+            if line: email_data.requests.append(line)
             
             
     return email_data
