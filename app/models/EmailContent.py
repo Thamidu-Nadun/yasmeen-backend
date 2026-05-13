@@ -72,6 +72,19 @@ class EmailContent:
     Payment Method: {self.payment_method}
     """
 
+    def __iter__(self):
+        yield "customer_name", self.customer_name
+        yield "start_date", self.start_date
+        yield "end_date", self.end_date
+        yield "total_pax", self.total_pax
+        yield "operator_name", self.operator_name
+        yield "vehicle_type", self.vehicle_type
+        yield "staff_assignment", self.staff_assignment
+        yield "iternary", self.iternary
+        yield "requests", self.requests
+        yield "total_fee", self.total_fee
+        yield "payment_method", self.payment_method
+
 class Email:
     def __init__(self, to_email: str, subject: str, email_content: EmailContent):
         self.to_email = to_email
