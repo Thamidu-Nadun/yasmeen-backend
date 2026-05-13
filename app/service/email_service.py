@@ -1,4 +1,4 @@
-import os, time
+import os, time, re
 from app.repo.email_repo import get_all_emails, get_email_by_id, get_email_desc, get_email_as_page, get_email_by_recipient, create_email, delete_email
 from app.utils.email_parser import extract_email_data, extract_email_data_jp
 from app.utils.pdf_generation import save_pdf
@@ -54,7 +54,12 @@ def save_email(recipient, subject, body, mail_type, language:str) -> dict | None
     
     # 2.2 save the PDF
         global absolute_pdf_path
-        saved_pdf_path = save_pdf(recipient, email_content, pdf_path)
+        global customer_name
+        if email_content.customer_name:
+            customer_name = re.sub(r'[ @./\\&\+\-\#\$\%\^\*()]+', '_', email_content.customer_name.strip())
+        else:
+            customer_name = "unknown_customer"
+        saved_pdf_path = save_pdf(customer_name, email_content, pdf_path)
         absolute_pdf_path = os.path.abspath(saved_pdf_path)
         print(f"PDF saved at: {absolute_pdf_path}")
         

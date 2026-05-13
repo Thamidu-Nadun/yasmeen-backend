@@ -71,18 +71,18 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
         page.close()
 
 
-def save_pdf(to_email: str, parsed_email_content: EmailContent, out_path: str) -> str:
+def save_pdf(file_name: str, parsed_email_content: EmailContent, out_path: str) -> str:
     """Generate PDF and save it in storage
 
     Args:
-        to_email (string): email address of the recipient
+        file_name (string): Name of the file.
         email_body (TEXT): email body content to be included in the PDF
         out_path (string): the directory where the generated PDF will be saved
 
     Returns:
         string: path to the saved PDF file
     """
-    output_path = os.path.join(out_path, f"{to_email}.pdf")
+    output_path = os.path.join(out_path, f"{file_name}.pdf")
     if not os.path.exists(out_path):
         os.makedirs(out_path)
         
