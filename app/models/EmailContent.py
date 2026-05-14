@@ -8,7 +8,8 @@ class EmailContent:
                  iternary: list = None,
                  requests: list = None,
                  total_fee: int = 0,
-                 payment_method: str = None):
+                 payment_method: str = None,
+                 taxi_charter_option: str = None):
         self.customer_name = customer_name
         self.start_date = start_date
         self.end_date = end_date
@@ -20,6 +21,7 @@ class EmailContent:
         self.requests = requests if requests is not None else []
         self.total_fee = total_fee
         self.payment_method = payment_method
+        self.taxi_charter_option = taxi_charter_option
         
     def __str__(self):
         return json.dumps({
@@ -33,7 +35,8 @@ class EmailContent:
             "iternary": self.iternary,
             "requests": self.requests,
             "total_fee": self.total_fee,
-            "payment_method": self.payment_method
+            "payment_method": self.payment_method,
+            "taxi_charter_option": self.taxi_charter_option
         }, indent=4)
 
     @classmethod
@@ -51,7 +54,8 @@ class EmailContent:
                 iternary=content_dict.get("iternary", []),
                 requests=content_dict.get("requests", []),
                 total_fee=content_dict.get("total_fee", 0),
-                payment_method=content_dict.get("payment_method")
+                payment_method=content_dict.get("payment_method"),
+                taxi_charter_option=content_dict.get("taxi_charter_option"),
             )
         except json.JSONDecodeError as e:
             print(f"Error decoding email content: {e}")
@@ -70,6 +74,7 @@ class EmailContent:
     Requests: {json.dumps(self.requests, indent=4)}
     Total Fee: {self.total_fee}
     Payment Method: {self.payment_method}
+    Taxi Charter Option: {self.taxi_charter_option}
     """
 
     def __iter__(self):
@@ -84,6 +89,7 @@ class EmailContent:
         yield "requests", self.requests
         yield "total_fee", self.total_fee
         yield "payment_method", self.payment_method
+        yield "taxi_charter_option", self.taxi_charter_option
 
 class Email:
     def __init__(self, to_email: str, subject: str, email_content: EmailContent):

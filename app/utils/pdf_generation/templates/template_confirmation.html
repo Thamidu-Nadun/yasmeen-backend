@@ -120,16 +120,12 @@
                         </td>
 
                         <!-- Plan Col -->
-                        <td class="border border-black align-top p-6">
+                        <td class="border border-black align-top p-6 text-sm">
                             {{ plans|safe }}
 
                             <!-- Pricing -->
-                            <div class="mb-8 mt-6 text-xs text-blue-500 font-bold">
-                                ■ Taxi Charter Fee (Private Vehicle)
-                                <br>
-                                Option ②:
-                                Japanese-speaking Driver (No Guide) / AC Sedan = 70,010 JPY (Tax
-                                Included)
+                            <div class="mb-8 mt-6 text-sm text-blue-500 font-bold">
+                                {{ taxi_charter_option|safe}}
                             </div>
                         </td>
 
@@ -142,7 +138,7 @@
             </div>
             <ul class="space-y-1">
                 {% for request in requests %}
-                <li class="text-[0.52rem] text-gray-700">
+                <li class="text-sm text-gray-700">
                     {{ request }}
                 </li>
                 {% endfor %}

@@ -55,6 +55,9 @@ def extract_email_data(email_content: str) -> EmailContent:
         elif re.match(r'\[Request(s)?\]', line, re.IGNORECASE):
             section = 'requests'
             continue
+        elif re.match(r'\[Taxi\s+Charter\s+Fee\]', line, re.IGNORECASE):
+            section = 'taxi_charter'
+            continue
         elif '━' in line: # separator line
             section = None
             continue
@@ -76,6 +79,9 @@ def extract_email_data(email_content: str) -> EmailContent:
             clean_line = line.rstrip('\n')
             line = re.sub(r'-\s*', '', clean_line) # remove leading dash and spaces
             if line: email_data.requests.append(line)
+        elif section == 'taxi_charter':
+            clean_line = line.rstrip('\n')
+            email_data.taxi_charter_option = clean_line
             
             
     return email_data

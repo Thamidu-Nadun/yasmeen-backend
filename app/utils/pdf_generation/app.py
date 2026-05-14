@@ -48,7 +48,8 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
             "vehicle_type": parsed_email_content.vehicle_type,
             "staff_assignment": parsed_email_content.staff_assignment,
             "total_fee": parsed_email_content.total_fee,
-            "payment_method": parsed_email_content.payment_method if parsed_email_content.payment_method else "N/A"
+            "payment_method": parsed_email_content.payment_method if parsed_email_content.payment_method else "N/A",
+            "taxi_charter_option": parsed_email_content.taxi_charter_option if parsed_email_content.taxi_charter_option else "N/A",
         }
         
         # print("Content to be injected: ", content_injected['plans'])
