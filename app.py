@@ -77,9 +77,11 @@ def create_email():
         return jsonify({'error': 'Request must be JSON'}), HTTPStatusCodes.BAD_REQUEST
     
     try:
-        data = EmailDTO(**request.get_json())
-        if data is None:
+        json_data = request.get_json()
+        if json_data is None:
             return jsonify({'error': 'Invalid JSON data'}), HTTPStatusCodes.BAD_REQUEST
+        
+        data = EmailDTO(**json_data)
         
         # print(f"Received email data: {data.model_dump()}")
         

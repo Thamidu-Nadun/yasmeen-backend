@@ -4,7 +4,7 @@ from app.models import EmailContent
 def clean_email_body(body: str):
     return body.strip().replace('[', '').replace(']', '')
 
-def extract_email_data(email_content: str) -> EmailContent:
+def extract_email_data(email_body: str) -> EmailContent:
     """Parse raw email body to EmailContent object
     Args:
         email_content (str): email body as string
@@ -18,7 +18,7 @@ def extract_email_data(email_content: str) -> EmailContent:
     email_data = EmailContent()
     section = None
     
-    for line in email_content.splitlines():
+    for line in email_body.splitlines():
         line = line.strip()
         if not line:
             continue
@@ -87,7 +87,7 @@ def extract_email_data(email_content: str) -> EmailContent:
     return email_data
 
     
-def extract_email_data_jp(email_content: str) -> EmailContent:
+def extract_email_data_jp(email_body: str) -> EmailContent:
     """Parse raw email body to EmailContent object for Japanese format
     Args:
         email_content (str): email body as string
@@ -101,7 +101,7 @@ def extract_email_data_jp(email_content: str) -> EmailContent:
     email_data = EmailContent()
     section = None
     
-    for line in email_content.splitlines():
+    for line in email_body.splitlines():
         line = line.strip()
         if not line:
             continue

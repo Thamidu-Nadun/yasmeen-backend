@@ -25,12 +25,11 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
             end_date = datetime.datetime.strptime(parsed_email_content.end_date, "%Y-%m-%d")
             
             issue_number = str(start_date.year) + " / " + start_date.strftime("%m%d") + "-" + end_date.strftime("%m%d")
-            # generated_date = datetime.datetime.now().strftime("%Y / %m%d")
+           
         except Exception as e:
             print(f"Error parsing dates: {e}")
             issue_number = "N/A"
-            # generated_date = datetime.datetime.now().strftime("%Y / %m%d")
-
+        
         generated_date = datetime.datetime.now().strftime("%Y / %m%d")
         content_injected = {
             "name": parsed_email_content.customer_name,
@@ -51,8 +50,6 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
             "payment_method": parsed_email_content.payment_method if parsed_email_content.payment_method else "N/A",
             "taxi_charter_option": parsed_email_content.taxi_charter_option if parsed_email_content.taxi_charter_option else "N/A",
         }
-        
-        # print("Content to be injected: ", content_injected['plans'])
         
         content = render_template("template_confirmation.html", content_injected)
         page.set_content(content)

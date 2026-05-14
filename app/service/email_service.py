@@ -76,7 +76,7 @@ def save_email(recipient, subject, body, mail_type, language:str) -> dict | None
                     body=body, 
                     pdf_path=absolute_pdf_path)
         
-        log_user_event(recipient, f"Email saved successfully", True)
+        log_user_event(recipient, "Email saved successfully", True)
         return saved_mail.to_dict() if saved_mail else None
     except Exception as e:
         log_system_event(f"Email saving failed: {e}", False)
