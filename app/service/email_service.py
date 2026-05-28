@@ -3,7 +3,6 @@ from app.repo.email_repo import get_all_emails, get_email_by_id, get_email_desc,
 from app.utils.email_parser import extract_email_data, extract_email_data_jp
 from app.utils.pdf_generation import save_pdfs
 from app.utils.logger import log_system_event, log_user_event
-from transformers.models import sam3
 
 DEFAULT_PAGE_LIMIT = 20
 
