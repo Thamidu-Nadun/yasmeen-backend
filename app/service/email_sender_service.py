@@ -10,7 +10,7 @@ def send_mail_to_recipient(email_id):
     recipient = email.recipient
     subject = email.subject
     body = email.body
-    attachment = email.pdf_path
+    attachment = email.confirmation_pdf_path
     headers = {
         'X-TYPE': email.mail_type,
         'X-COMPANY': "Thamidu Nadun",
