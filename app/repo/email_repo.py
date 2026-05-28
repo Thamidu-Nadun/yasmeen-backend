@@ -1,19 +1,20 @@
 from extensions import db
 from app.models.Email import Email
+from sqlalchemy.sql._elements_constructors import desc
 
 def get_all_emails() -> list[Email]:
     """Retrieve all email records from the database.
     Returns:
         list: A list of all Email objects in the database.
     """
-    return Email.query.all()
+    return db.session.scalars(db.select(Email)).all()
 
 def get_email_desc() -> list[Email]:
     """Retrieve all email records from the database, ordered by creation date in descending order.
     Returns:
         list: A list of all Email objects in the database, ordered by creation date (newest first).
     """
-    return Email.query.order_by(Email.id.desc()).all()
+    return db.session.scalars(db.select(Email).order_by(desc(Email.id))).all()
 
 def get_email_as_page(start: int, limit: int, sort: str = "desc") -> list[Email]:
     """Retrieve a paginated list of email records from the database.
@@ -24,9 +25,9 @@ def get_email_as_page(start: int, limit: int, sort: str = "desc") -> list[Email]
         list: A list of Email objects for the specified page.
     """
     if sort == "desc":
-        return Email.query.order_by(Email.id.desc()).offset(start).limit(limit).all()
+        return db.session.scalars(db.select(Email).order_by(desc(Email.id)).offset(start).limit(limit)).all()
     else:
-        return Email.query.order_by(Email.id.asc()).offset(start).limit(limit).all()
+        return db.session.scalars(db.select(Email).order_by(Email.id).offset(start).limit(limit)).all()
 
 def get_email_by_id(email_id) -> Email | None:
     """Retrieve an email record by its ID.
@@ -35,7 +36,7 @@ def get_email_by_id(email_id) -> Email | None:
     Returns:
         Email: The Email object with the specified ID, or None if not found.
     """
-    return Email.query.get(email_id)
+    return db.session.scalars(db.select(Email).filter_by(id=email_id)).first()
 
 def get_email_by_recipient(recipient) -> list[Email]:
     """Retrieve email records by recipient email address.
@@ -44,7 +45,7 @@ def get_email_by_recipient(recipient) -> list[Email]:
     Returns:
         list: A list of Email objects that match the specified recipient.
     """
-    return Email.query.filter_by(recipient=recipient).all()
+    return db.session.scalars(db.select(Email).filter_by(recipient=recipient)).all()
 
 def create_email(recipient, subject, mail_type, body, confimation_pdf_path, driver_pdf_path) -> Email:
     """Create a new email record in the database.
@@ -75,7 +76,7 @@ def delete_email(email_id) -> bool:
     Returns:
         bool: True if the email was deleted, False if not found.
     """
-    email = Email.query.get(email_id)
+    email = db.session.scalars(db.select(Email).filter_by(id=email_id)).first()
     if email:
         db.session.delete(email)
         db.session.commit()
