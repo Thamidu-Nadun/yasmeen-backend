@@ -46,7 +46,7 @@ def get_email_by_recipient(recipient) -> list[Email]:
     """
     return Email.query.filter_by(recipient=recipient).all()
 
-def create_email(recipient, subject, mail_type, body, pdf_path=None) -> Email:
+def create_email(recipient, subject, mail_type, body, confimation_pdf_path, driver_pdf_path) -> Email:
     """Create a new email record in the database.
     Args:
         recipient (str): The email recipient.
@@ -61,7 +61,8 @@ def create_email(recipient, subject, mail_type, body, pdf_path=None) -> Email:
         subject=subject,
         mail_type=mail_type,
         body=body,
-        pdf_path=pdf_path
+        confirmation_pdf_path=confimation_pdf_path,
+        driver_plan_pdf_path=driver_pdf_path
     )
     db.session.add(new_email)
     db.session.commit()

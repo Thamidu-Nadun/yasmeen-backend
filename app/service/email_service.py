@@ -1,8 +1,9 @@
 import os, time, re
 from app.repo.email_repo import get_all_emails, get_email_by_id, get_email_desc, get_email_as_page, get_email_by_recipient, create_email, delete_email
 from app.utils.email_parser import extract_email_data, extract_email_data_jp
-from app.utils.pdf_generation import save_confirmation_pdf
+from app.utils.pdf_generation import save_pdfs
 from app.utils.logger import log_system_event, log_user_event
+from transformers.models import sam3
 
 DEFAULT_PAGE_LIMIT = 20
 
@@ -59,22 +60,31 @@ def save_email(recipient, subject, body, mail_type, language:str) -> dict | None
             customer_name = re.sub(r'[ @./\\&\+\-\#\$\%\^\*()]+', '_', email_content.customer_name.strip())
         else:
             customer_name = "unknown_customer"
-        saved_pdf_path = save_confirmation_pdf(customer_name, email_content, pdf_path)
-        absolute_pdf_path = os.path.abspath(saved_pdf_path)
-        print(f"PDF saved at: {absolute_pdf_path}")
         
-        log_user_event(recipient, f"PDF generated and saved successfully at {absolute_pdf_path}", True)
+        confirmation_pdf_path, driver_pdf_path = save_pdfs(customer_name, email_content, pdf_path)
+        
+        abs_confirmation_pdf_path = os.path.abspath(confirmation_pdf_path)
+        abs_driver_pdf_path = os.path.abspath(driver_pdf_path)
+        
+        print(f"PDF saved at: {abs_confirmation_pdf_path}")
+        print(f"PDF saved at: {abs_driver_pdf_path}")
+        
+        log_user_event(recipient, f"PDF generated and saved successfully at {abs_confirmation_pdf_path}", True)
+        log_user_event(recipient, f"PDF generated and saved successfully at {abs_driver_pdf_path}", True)
     except Exception as e:
         log_system_event(f"PDF generation failed: {e}", False)
         raise ValueError(f"Failed to generate PDF: {e}")
     
     # 3. save email data to the database
     try:
-        saved_mail = create_email(recipient=recipient, 
-                    subject=subject, 
-                    mail_type=mail_type,
-                    body=body, 
-                    pdf_path=absolute_pdf_path)
+        saved_mail = create_email(
+            recipient=recipient,
+            subject=subject,
+            mail_type=mail_type,
+            body=body,
+            confimation_pdf_path=abs_confirmation_pdf_path,
+            driver_pdf_path=abs_driver_pdf_path
+        )
         
         log_user_event(recipient, "Email saved successfully", True)
         return saved_mail.to_dict() if saved_mail else None

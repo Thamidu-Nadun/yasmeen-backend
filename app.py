@@ -132,7 +132,12 @@ def get_pdf(email_id):
     if email is None:
         return jsonify({'error': 'Email not found'}), HTTPStatusCodes.NOT_FOUND
     
-    pdf_path = email.get('pdf_path')
+    pdf_path = None
+    if request.args.get('type') == 'driver_plan':
+        pdf_path = email.get('driver_plan_pdf_path')
+    else:
+        pdf_path = email.get('confirmation_pdf_path')
+    
     if not pdf_path:
         return jsonify({'error': 'PDF not found for this email'}), HTTPStatusCodes.NOT_FOUND
     
@@ -144,7 +149,12 @@ def download_pdf(email_id):
     if email is None:
         return jsonify({'error': 'Email not found'}), HTTPStatusCodes.NOT_FOUND
     
-    pdf_path = email.get('pdf_path')
+    pdf_path = None
+    if request.args.get('type') == 'driver_plan':
+        pdf_path = email.get('driver_plan_pdf_path')
+    else:
+        pdf_path = email.get('confirmation_pdf_path')
+    
     if not pdf_path:
         return jsonify({'error': 'PDF not found for this email'}), HTTPStatusCodes.NOT_FOUND
     

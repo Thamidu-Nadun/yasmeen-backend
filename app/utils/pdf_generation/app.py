@@ -107,8 +107,8 @@ def generate_driver_plan_pdf(output_path, parsed_email_content: EmailContent):
     finally:
         page.close()
 
-def save_confirmation_pdf(file_name: str, parsed_email_content: EmailContent, out_path: str) -> str:
-    """Generate PDF and save it in storage
+def save_pdfs(file_name: str, parsed_email_content: EmailContent, out_path: str) -> tuple[str, str]:
+    """Generate and save Confirmation and Driver Plan PDFs based on the parsed email content.
 
     Args:
         file_name (string): Name of the file.
@@ -132,4 +132,4 @@ def save_confirmation_pdf(file_name: str, parsed_email_content: EmailContent, ou
     generate_driver_plan_pdf(driver_plan_output_path, parsed_email_content)
     print(f"Driver Plan PDF generated and saved at: {driver_plan_output_path}")
     
-    return confirmation_output_path
+    return confirmation_output_path, driver_plan_output_path

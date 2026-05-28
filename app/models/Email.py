@@ -6,7 +6,8 @@ class Email(db.Model):
     subject = db.Column(db.String(255), nullable=False)
     mail_type = db.Column(db.String(50), nullable=False)
     body = db.Column(db.Text, nullable=False)
-    pdf_path = db.Column(db.String(255), nullable=True)
+    confirmation_pdf_path = db.Column(db.String(255), nullable=True)
+    driver_plan_pdf_path = db.Column(db.String(255), nullable=True)
     
     def to_dict(self):
         return {
@@ -15,6 +16,7 @@ class Email(db.Model):
             'subject': self.subject,
             'mail_type': self.mail_type,
             'body': self.body,
-            'pdf_path': self.pdf_path
+            'confirmation_pdf_path': self.confirmation_pdf_path,
+            'driver_plan_pdf_path': self.driver_plan_pdf_path
         }
     

@@ -1,3 +1,3 @@
-from .app import save_confirmation_pdf
+from .app import save_pdfs
 
-__all__ = ["save_confirmation_pdf"]
+__all__ = ["save_pdfs"]
