@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Plan</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @font-face {
+            font-family: 'noto-sans-jp';
+            src: url('../static/noto-sans-jp.ttf') format('truetype');
+        }
+
+        * {
+            font-family: 'noto-sans-jp', sans-serif;
+        }
+
+        html,
+        body {
+            width: 100%;
+        }
+
+        @page {
+            size: A4;
+            margin: 8mm;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-size: 11px;
+            }
+
+            h2 {
+                font-size: 22px !important;
+            }
+
+            h3 {
+                font-size: 16px !important;
+            }
+
+            .container {
+                padding-top: 5mm !important;
+                padding-bottom: 5mm !important;
+            }
+
+            .no-break {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body class="w-full p-4">
+    <div class="header no-break w-full mb-4">
+        <div class="flex no-break text-2xl justify-center items-center">
+            <h2>{{ customer_name }}</h2>
+            <h2> {{ num_of_pax }} <span class="text-lg">PAX</span></h2>
+        </div>
+        <div class="flex no-break text-xl justify-center items-center underline">
+            <h3>Driver Plan \</h3>
+            <h3 class="ml-2">{{ vehicle_type }} \</h3>
+            <h3 class="ml-1">ルワンさん, Ruwan</h3>
+        </div>
+    </div>
+    <div class="itinerary w-full">
+        <h2 class="text-2xl mb-4 font-bold uppercase underline">Itinerary</h2>
+        {% for day in itinerary %}
+        <div class="day no-break my-2 p-1 w-full">
+            <h3 class="text-xl font-bold">{{ day.day }}</h3>
+            <p class="text-lg mt-1">{{ day.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="requests mt-4 no-break">
+        <h3 class="text-2xl underline font-bold uppercase">Requets</h3>
+        <ul class="list-disc">
+            {% for request in requests %}
+            <li class="text-lg">{{ request }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="total-price mt-4">
+        <h2>Total Price: {{ total_price|comma }} JPY</h2>
+    </div>
+    <div class="inclusions mt-8 no-break">
+        <div>
+            ◎ Included in the Quotation:
+            Fuel costs, Meals & accommodation expenses for staff , Toll fees, Parking fees at various locations, Safari
+            Tour Fees
+        </div>
+        <div>
+            ◎ Not Included in the Quotation:
+            Customer's meals / accommodation fees, sightseeing entrance fees, Tips for our driver
+        </div>
+    </div>
+
+</body>
+
+</html>

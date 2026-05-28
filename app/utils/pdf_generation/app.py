@@ -5,6 +5,8 @@ from . import filters
 from playwright.sync_api import sync_playwright
 from ...models.EmailContent import EmailContent
 import extensions
+from app.utils.translate import translate_jp_to_en
+import json
 
 def render_template(html_template, data):
     template_dir = Path(__file__).parent / "templates"
@@ -14,7 +16,7 @@ def render_template(html_template, data):
     
     return template.render(data)
 
-def generate_pdf(output_path, parsed_email_content: EmailContent):
+def generate_confirmation_pdf(output_path, parsed_email_content: EmailContent):
     print("browser", extensions.browser)
     page = extensions.browser.new_page()
     try:
@@ -69,7 +71,43 @@ def generate_pdf(output_path, parsed_email_content: EmailContent):
         page.close()
 
 
-def save_pdf(file_name: str, parsed_email_content: EmailContent, out_path: str) -> str:
+def generate_driver_plan_pdf(output_path, parsed_email_content: EmailContent):
+    print("browser", extensions.browser)
+    page = extensions.browser.new_page()
+    try:
+        # Translate itinerary and requests from Japanese to English
+        data = json.dumps({
+            "itinerary": parsed_email_content.iternary,
+            "requests": parsed_email_content.requests
+        }, ensure_ascii=False)
+        translated_data = translate_jp_to_en(data)
+        
+        content_injected = {
+            "customer_name": parsed_email_content.customer_name,
+            "num_of_pax": parsed_email_content.total_pax,
+            "vehicle_type": parsed_email_content.vehicle_type,
+            "total_price": parsed_email_content.total_fee,
+            "itinerary": translated_data.get("itinerary", []) if translated_data else [],
+            "requests": translated_data.get("requests", []) if translated_data else []
+        }
+        content = render_template("driver_plan.template.html", content_injected)
+        page.set_content(content)
+        page.pdf(path=output_path,
+                format='A4', 
+                print_background=True, 
+                display_header_footer=False,
+                margin={
+                    "top": "8mm",
+                    "bottom": "8mm",
+                    "left": "8mm",
+                    "right": "8mm"
+                })
+    except Exception as e:
+        print(f"Error generating PDF: {e}")
+    finally:
+        page.close()
+
+def save_confirmation_pdf(file_name: str, parsed_email_content: EmailContent, out_path: str) -> str:
     """Generate PDF and save it in storage
 
     Args:
@@ -80,11 +118,18 @@ def save_pdf(file_name: str, parsed_email_content: EmailContent, out_path: str) 
     Returns:
         string: path to the saved PDF file
     """
-    output_path = os.path.join(out_path, f"{file_name}.pdf")
+    confirmation_output_path = os.path.join(out_path, f"{file_name}.pdf")
+    driver_plan_output_path = os.path.join(out_path, f"{file_name}_driver_plan.pdf")
+    
     if not os.path.exists(out_path):
         os.makedirs(out_path)
         
-    print(f"Generating PDF at: {output_path}")
-    generate_pdf(output_path, parsed_email_content)
-    print(f"PDF generated and saved at: {output_path}")
-    return output_path
+    print(f"Generating Confirmation PDF at: {confirmation_output_path}")
+    generate_confirmation_pdf(confirmation_output_path, parsed_email_content)
+    print(f"Confirmation PDF generated and saved at: {confirmation_output_path}")
+    
+    print(f"Generating Driver Plan PDF at: {driver_plan_output_path}")
+    generate_driver_plan_pdf(driver_plan_output_path, parsed_email_content)
+    print(f"Driver Plan PDF generated and saved at: {driver_plan_output_path}")
+    
+    return confirmation_output_path
