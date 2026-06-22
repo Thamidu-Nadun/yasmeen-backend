@@ -13,6 +13,8 @@ services:
     restart: unless-stopped
     ports:
       - "5001:5000"
+    env_file:
+      - .env
     volumes:
       - backend_pdf:/app/pdf
       - backend_instance:/app/instance
