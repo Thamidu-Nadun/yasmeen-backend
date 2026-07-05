@@ -1,4 +1,4 @@
-version: 3.0.0
+version: "3.9"
 
 services:
   prometheus:
@@ -19,6 +19,9 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
+    environment:
+      - GF_SERVER_ROOT_URL=https://yasmeen.nadun.dev/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     restart: unless-stopped
     deploy:
       resources:
