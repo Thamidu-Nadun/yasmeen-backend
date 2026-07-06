@@ -32,3 +32,6 @@ services:
     image: prom/node-exporter
     container_name: node-exporter
     restart: unless-stopped
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
