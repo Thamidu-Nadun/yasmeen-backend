@@ -1,0 +1,12 @@
+<script>
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc5MDc4Mzk3MiwianRpIjoiMTJjMDQzOTktM2NiNC00ZDVkLThiOWEtMTA2YjE0MmUyMTgzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3OTA3ODM5NzIsImNzcmYiOiJiZWQ2MjVjMC01YzdiLTRhOWEtOTRiOS1mM2M1NjA5ZDcxYTYiLCJleHAiOjE3OTA3ODQ4NzJ9.D9zHahxcMojQ5itvoD16S0bodP7jKTcc0eDpERlNB_4";
+  fetch("http://localhost:5000/api/email/1", {
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((d) => console.log(d));
+</script>

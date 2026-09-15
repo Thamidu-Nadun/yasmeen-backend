@@ -1,0 +1,4 @@
+name: yasmeen_env
+variables:
+  - name: HOST
+    value: http://localhost:5000

@@ -18,7 +18,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library. If not, see <https://www.gnu.org/licenses/>.
 """
 
-
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from extensions import db, init_browser
@@ -33,14 +32,21 @@ from app.service.email_service import (
     save_email as service_save_email,
     delete_email_by_id,
 )
-from app.service.log_service import (
-    service_get_logs
-)
+from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
+from app.service.log_service import service_get_logs
 from app.service.email_sender_service import send_mail_to_recipient
+from app.service.user_service import (
+    register_user as service_register_user,
+    login_user as service_login_user,
+)
+from app.dto.user_dto import UserCreateDTO, UserLoginDTO
+from app.utils.auth import auth
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": ["https://yasmeen.nadun.dev"]}})
 app.config.from_object(Config)
+
+jwt = JWTManager(app)
 
 db.init_app(app)
 with app.app_context():
@@ -50,121 +56,233 @@ init_browser()
 
 # Emails Routes
 
+
 # Get all emails
-@app.route('/api/email', methods=['GET'])
+@app.route("/api/email", methods=["GET"])
+@auth
 def list_emails():
-    sort = request.args.get('sort', 'desc')
-    page = request.args.get('start', 0, type=int)
-    limit = request.args.get('limit', 20, type=int)
-    
-    if sort == 'desc':
+    sort = request.args.get("sort", "desc")
+    page = request.args.get("start", 0, type=int)
+    limit = request.args.get("limit", 20, type=int)
+
+    if sort == "desc":
         return jsonify(service_get_email_by_page(page, limit, sort="desc"))
     else:
         return jsonify(service_get_email_by_page(page, limit, sort="asc"))
 
+
 # Get email by ID
-@app.route('/api/email/<int:email_id>', methods=['GET'])
+@app.route("/api/email/<int:email_id>", methods=["GET"])
+@auth
 def fetch_email(email_id):
     email = service_get_email(email_id)
     if email is None:
-        return jsonify({'error': 'Email not found'}), HTTPStatusCodes.NOT_FOUND
+        return jsonify({"error": "Email not found"}), HTTPStatusCodes.NOT_FOUND
     return jsonify(email)
 
+
 # Create a new email
-@app.route('/api/email', methods=['POST'])
+@app.route("/api/email", methods=["POST"])
+@auth
 def create_email():
     if not request.is_json:
-        return jsonify({'error': 'Request must be JSON'}), HTTPStatusCodes.BAD_REQUEST
-    
+        return jsonify({"error": "Request must be JSON"}), HTTPStatusCodes.BAD_REQUEST
+
     try:
         json_data = request.get_json()
         if json_data is None:
-            return jsonify({'error': 'Invalid JSON data'}), HTTPStatusCodes.BAD_REQUEST
-        
+            return jsonify({"error": "Invalid JSON data"}), HTTPStatusCodes.BAD_REQUEST
+
         data = EmailDTO(**json_data)
-        
+
         # print(f"Received email data: {data.model_dump()}")
-        
+
         saved_mail = service_save_email(
             recipient=data.recipient,
             subject=data.subject,
             body=data.body,
             mail_type=data.mail_type,
-            language=data.language
+            language=data.language,
         )
-        
+
         return jsonify(saved_mail), HTTPStatusCodes.CREATED
     except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+
         print(f"Error processing request: {e}")
-        return jsonify({'error': 'Invalid data format'}), HTTPStatusCodes.BAD_REQUEST
+        return jsonify({"error": "Invalid data format"}), HTTPStatusCodes.BAD_REQUEST
+
 
 # Update an existing email
-@app.route('/api/email/<int:email_id>', methods=['PUT'])
+@app.route("/api/email/<int:email_id>", methods=["PUT"])
+@auth
 def update_email(email_id):
     return jsonify({})
 
+
 # Delete an email
-@app.route('/api/email/<int:email_id>', methods=['DELETE'])
+@app.route("/api/email/<int:email_id>", methods=["DELETE"])
+@auth
 def delete_email(email_id):
     res = delete_email_by_id(email_id)
     if not res:
-        return jsonify({'error': 'Email not found'}), 404
-    return jsonify({'message': 'Email deleted successfully'})
+        return jsonify({"error": "Email not found"}), 404
+    return jsonify({"message": "Email deleted successfully"})
+
 
 # send email
-@app.route('/api/email/send/<int:email_id>', methods=['POST'])
+@app.route("/api/email/send/<int:email_id>", methods=["POST"])
+@auth
 def send_email(email_id):
     res = send_mail_to_recipient(email_id)
     if not res:
-        return jsonify({'error': 'Failed to send email'}), HTTPStatusCodes.INTERNAL_SERVER_ERROR
-    return jsonify({'message': 'Email sent successfully'})
+        return (
+            jsonify({"error": "Failed to send email"}),
+            HTTPStatusCodes.INTERNAL_SERVER_ERROR,
+        )
+    return jsonify({"message": "Email sent successfully"})
+
 
 # Logs Routes
-@app.route('/api/log', methods=['GET'])
+@app.route("/api/log", methods=["GET"])
+@auth
 def get_logs():
     logs = service_get_logs()
     return jsonify(logs)
 
+
+# User Routes
+@app.route("/api/register", methods=["POST"])
+def register_user():
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), HTTPStatusCodes.BAD_REQUEST
+
+    try:
+        json_data = request.get_json()
+        if json_data is None:
+            return jsonify({"error": "Invalid JSON data"}), HTTPStatusCodes.BAD_REQUEST
+
+        username = json_data.get("username")
+        email = json_data.get("email")
+        password = json_data.get("password")
+
+        if not username or not password or not email:
+            return (
+                jsonify({"error": "Username, email and password are required"}),
+                HTTPStatusCodes.BAD_REQUEST,
+            )
+
+        user_dto = UserCreateDTO(username=username, email=email, password=password)
+        user = service_register_user(user_dto)
+        return (
+            jsonify({"message": "User registered successfully"}),
+            HTTPStatusCodes.CREATED,
+        )
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+
+        print(f"Error processing request: {e}")
+        return jsonify({"error": "Invalid data format"}), HTTPStatusCodes.BAD_REQUEST
+
+
+@app.route("/api/login", methods=["POST"])
+def login_user():
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), HTTPStatusCodes.BAD_REQUEST
+
+    try:
+        json_data = request.get_json()
+        if json_data is None:
+            return jsonify({"error": "Invalid JSON data"}), HTTPStatusCodes.BAD_REQUEST
+
+        email = json_data.get("email")
+        password = json_data.get("password")
+
+        if not email or not password:
+            return (
+                jsonify({"error": "Email and password are required"}),
+                HTTPStatusCodes.BAD_REQUEST,
+            )
+        user_dto = UserLoginDTO(email=email, password=password)
+        response = service_login_user(user_dto)
+
+        return jsonify(response), HTTPStatusCodes.OK
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+
+        print(f"Error processing request: {e}")
+        return jsonify({"error": "Invalid data format"}), HTTPStatusCodes.BAD_REQUEST
+
+
 # PDF Routes
-@app.route('/api/pdf/<int:email_id>', methods=['GET'])
+@app.route("/api/pdf/<int:email_id>", methods=["GET"])
+@auth
 def get_pdf(email_id):
     email = service_get_email(email_id)
     if email is None:
-        return jsonify({'error': 'Email not found'}), HTTPStatusCodes.NOT_FOUND
-    
-    pdf_path = None
-    if request.args.get('type') == 'driver_plan':
-        pdf_path = email.get('driver_plan_pdf_path')
-    else:
-        pdf_path = email.get('confirmation_pdf_path')
-    
-    if not pdf_path:
-        return jsonify({'error': 'PDF not found for this email'}), HTTPStatusCodes.NOT_FOUND
-    
-    return jsonify({'pdf_path': pdf_path})
+        return jsonify({"error": "Email not found"}), HTTPStatusCodes.NOT_FOUND
 
-@app.route('/api/pdf/download/<int:email_id>', methods=['GET'])
+    pdf_path = None
+    if request.args.get("type") == "driver_plan":
+        pdf_path = email.get("driver_plan_pdf_path")
+    else:
+        pdf_path = email.get("confirmation_pdf_path")
+
+    if not pdf_path:
+        return (
+            jsonify({"error": "PDF not found for this email"}),
+            HTTPStatusCodes.NOT_FOUND,
+        )
+    pdf_path = pdf_path.replace(
+        "D:\\Other\\Freelance_Projects\\Email_Agent\\pdf_generation_backend\\", ""
+    )
+    return jsonify({"pdf_path": pdf_path})
+
+
+@app.route("/api/pdf/download/<int:email_id>", methods=["GET"])
+@auth
 def download_pdf(email_id):
     email = service_get_email(email_id)
     if email is None:
-        return jsonify({'error': 'Email not found'}), HTTPStatusCodes.NOT_FOUND
-    
+        return jsonify({"error": "Email not found"}), HTTPStatusCodes.NOT_FOUND
+
     pdf_path = None
-    if request.args.get('type') == 'driver_plan':
-        pdf_path = email.get('driver_plan_pdf_path')
+    if request.args.get("type") == "driver_plan":
+        pdf_path = email.get("driver_plan_pdf_path")
     else:
-        pdf_path = email.get('confirmation_pdf_path')
-    
+        pdf_path = email.get("confirmation_pdf_path")
+
     if not pdf_path:
-        return jsonify({'error': 'PDF not found for this email'}), HTTPStatusCodes.NOT_FOUND
-    
-    return send_file(pdf_path, as_attachment=False, mimetype='application/pdf')
+        return (
+            jsonify({"error": "PDF not found for this email"}),
+            HTTPStatusCodes.NOT_FOUND,
+        )
+
+    return send_file(pdf_path, as_attachment=False, mimetype="application/pdf")
+
+
+@app.route("/api/profile", methods=["GET"])
+@auth
+def get_profile():
+    user = get_jwt_identity()
+    if not user:
+        return (
+            jsonify({"error": "User not authenticated"}),
+            HTTPStatusCodes.UNAUTHORIZED,
+        )
+    return jsonify({"user_id": user}), HTTPStatusCodes.OK
+
 
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({'error': 'Not found'}), HTTPStatusCodes.NOT_FOUND
+    return jsonify({"error": "Not found"}), HTTPStatusCodes.NOT_FOUND
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=False, port=5000, threaded=False)
-
-
