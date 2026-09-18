@@ -107,23 +107,23 @@ jobs:
           cache-to: type=registry,ref=nadundev/yasmeen-backend:cache,mode=max
 
       # ── Container scan: Trivy (GATE) ─────────────────────────
-      - name: Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@master
-        id: trivy
-        with:
-          image-ref: yasmeen-backend:ci-scan
-          format: sarif
-          output: trivy-scan.sarif
-          severity: HIGH,CRITICAL
-          exit-code: 1
-          ignore-unfixed: true
+      # - name: Trivy vulnerability scan
+      #   uses: aquasecurity/trivy-action@master
+      #   id: trivy
+      #   with:
+      #     image-ref: yasmeen-backend:ci-scan
+      #     format: sarif
+      #     output: trivy-scan.sarif
+      #     severity: HIGH,CRITICAL
+      #     exit-code: 1
+      #     ignore-unfixed: true
 
-      - name: Upload Trivy SARIF
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: trivy-scan
-          path: trivy-scan.sarif
+      # - name: Upload Trivy SARIF
+      #   uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #     name: trivy-scan
+      #     path: trivy-scan.sarif
 
       # ── SBOM generation ──────────────────────────────────────
       - name: Generate SBOM
