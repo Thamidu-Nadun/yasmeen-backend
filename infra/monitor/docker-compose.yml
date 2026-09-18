@@ -3,6 +3,9 @@ version: "3.9"
 services:
   prometheus:
     image: prom/prometheus
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
@@ -16,6 +19,9 @@ services:
 
   grafana:
     image: grafana/grafana
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     container_name: grafana
     ports:
       - "3000:3000"
@@ -30,6 +36,9 @@ services:
 
   node-exporter:
     image: prom/node-exporter
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     container_name: node-exporter
     restart: unless-stopped
     pid: host

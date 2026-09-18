@@ -8,10 +8,9 @@ http:
   url: "{{HOST}}/api/profile"
   headers:
     - name: Authorization
-      value: Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc5MDc4Mzk3MiwianRpIjoiMTJjMDQzOTktM2NiNC00ZDVkLThiOWEtMTA2YjE0MmUyMTgzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3OTA3ODM5NzIsImNzcmYiOiJiZWQ2MjVjMC01YzdiLTRhOWEtOTRiOS1mM2M1NjA5ZDcxYTYiLCJleHAiOjE3OTA3ODQ4NzJ9.D9zHahxcMojQ5itvoD16S0bodP7jKTcc0eDpERlNB_4
+      value: ""
   auth:
     type: apikey
-    key: ""
     placement: header
 
 settings:

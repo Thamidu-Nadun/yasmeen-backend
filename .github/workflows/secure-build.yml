@@ -1,0 +1,196 @@
+name: Security Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    outputs:
+      scan-passed: ${{ steps.gate.outputs.passed }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Backend SAST ──────────────────────────────────────────
+      - name: Run Semgrep (Backend)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/security-audit
+          sarif_file: semgrep-backend.sarif
+          timeout: 300
+
+      - name: Upload Semgrep SARIF
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-backend
+          path: semgrep-backend.sarif
+
+      # ── Dependency scan: pip-audit ─────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: pip-audit
+        run: |
+          pip install pip-audit
+          pip-audit --strict --requirement requirements.txt || exit 1
+
+      # ── Frontend checkout + scans ─────────────────────────────
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+        with:
+          repository: thamidu-Nadun/yasmeen-frontend
+          path: frontend
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: npm audit
+        run: cd frontend && npm audit --audit-level=high
+
+      - name: Run Semgrep (Frontend)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/secrets
+          directory: frontend
+          sarif_file: semgrep-frontend.sarif
+
+      - name: Upload Semgrep Frontend SARIF
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-frontend
+          path: semgrep-frontend.sarif
+
+      # ── Secret scanning ───────────────────────────────────────
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Build Docker image ───────────────────────────────────
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: yasmeen-backend:ci-scan
+          cache-from: type=registry,ref=nadundev/yasmeen-backend:cache
+          cache-to: type=registry,ref=nadundev/yasmeen-backend:cache,mode=max
+
+      # ── Container scan: Trivy (GATE) ─────────────────────────
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        id: trivy
+        with:
+          image-ref: yasmeen-backend:ci-scan
+          format: sarif
+          output: trivy-scan.sarif
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          ignore-unfixed: true
+
+      - name: Upload Trivy SARIF
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-scan
+          path: trivy-scan.sarif
+
+      # ── SBOM generation ──────────────────────────────────────
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: yasmeen-backend:ci-scan
+          format: spdx-json
+          output: sbom-backend.spdx.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-backend
+          path: sbom-backend.spdx.json
+
+      # ── Gate result ──────────────────────────────────────────
+      - name: Security gate result
+        id: gate
+        run: |
+          if [ "${{ steps.trivy.outcome }}" = "success" ]; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "passed=false" >> $GITHUB_OUTPUT
+          fi
+
+  deploy:
+    needs: security-scan
+    if: needs.security-scan.outputs.scan-passed == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://your-domain.com
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build & push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: nadundev/yasmeen-backend:latest, nadundev/yasmeen-backend:${{ github.sha }}
+
+      - name: Build & push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          push: true
+          tags: nadundev/yasmeen-frontend:latest, nadundev/yasmeen-frontend:${{ github.sha }}
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: nadun
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -e
+            cd /home/nadun/yasmeen/
+            sudo deploy.sh

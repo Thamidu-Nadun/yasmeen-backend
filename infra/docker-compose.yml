@@ -3,12 +3,18 @@ version: "3.9"
 services:
   frontend:
     image: nadundev/yasmeen-frontend
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     container_name: yasmeen_frontend
     restart: unless-stopped
     ports:
       - "5000:80"
   backend:
     image: nadundev/yasmeen-backend
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     container_name: yasmeen_backend
     restart: unless-stopped
     ports:
