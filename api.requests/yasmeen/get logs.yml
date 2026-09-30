@@ -1,0 +1,20 @@
+info:
+  name: get logs
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{HOST}}/api/log"
+  headers:
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc5MTkxMjUxNiwianRpIjoiMjE5ZmU2NGItYjU3OS00M2NjLWExNjAtMWRjN2JmOTRiMzM0IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3OTE5MTI1MTYsImNzcmYiOiIzZTRhMjllNi1jZTEwLTQwNzctYjBmYy0zMWEwZTg2NmVmYjAiLCJleHAiOjE3OTE5MTM0MTZ9.Lxfdt-JZEFlnZcKwNMaRM3mxVoozTp0YTSZStmn7u3M
+  auth:
+    type: apikey
+    placement: header
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
