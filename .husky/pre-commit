@@ -1,0 +1,9 @@
+echo "[+] Sniffing your code"
+pnpx lint-staged
+
+if [ $? -ne 0 ]; then
+echo "[-] Linting failed. Commit aborted."
+exit 1
+fi
+
+echo "[+] Linting passed. Proceeding with commit."

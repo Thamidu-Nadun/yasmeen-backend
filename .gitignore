@@ -9,6 +9,7 @@ IMPROVE.md
 pdf/
 instance/
 logs/
+node_modules/
 
 # Python-generated files
 __pycache__/
